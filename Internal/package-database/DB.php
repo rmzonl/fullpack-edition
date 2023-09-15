@@ -2186,7 +2186,7 @@ class DB extends Connection
             }
             else
             {
-                $key = ' WHEN ' . $key . ' THEN ';
+                $key = ' WHEN ' . $this->escapeStringAddNail($key) . ' THEN ';
             }
 
             $case .= $key . $val;
