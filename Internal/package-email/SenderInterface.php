@@ -12,6 +12,28 @@
 interface SenderInterface
 {
     /**
+     * Sets command line.
+     * 
+     * @param string $commandLine
+     * 
+     * @return Sender
+     * 
+     * @codeCoverageIgnore
+     */
+    public function cr(string $commandLine) : Sender;
+    
+    /**
+     * Sets mail line.
+     * 
+     * @param string $mailLine
+     * 
+     * @return Sender
+     * 
+     * @codeCoverageIgnore
+     */
+    public function lf(string $mailLine) : Sender;
+
+    /**
      * Settings
      * 
      * @param array $settings = NULL

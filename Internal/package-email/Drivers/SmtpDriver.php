@@ -85,6 +85,7 @@ class SmtpDriver extends DriverMappingAbstract
         $this->keepAlive  = $settings['keepAlive'] ?? '';
         $this->dsn        = $settings['dsn']       ?? '';
         $this->tos        = $settings['tos']       ?? [];
+        $this->lf         = $settings['commandLine'] ?? $this->lf;
     }
 
     /**

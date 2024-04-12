@@ -53,6 +53,7 @@ class Sender implements SenderInterface
     protected $contentType  = 'plain';
     protected $mailPath     = '/usr/sbin/sendmail';
     protected $lf           = "\n";
+    protected $cr           = "\n";
     protected $mimeVersion  = '1.0';
     protected $boundary     = '';
     protected $multiPart    = 'mixed';
@@ -148,6 +149,38 @@ class Sender implements SenderInterface
         {
             $this->$key = $settings[$key] ?? $val;
         }
+
+        return $this;
+    }
+
+    /**
+     * Sets command line.
+     * 
+     * @param string $commandLine
+     * 
+     * @return Sender
+     * 
+     * @codeCoverageIgnore
+     */
+    public function cr(string $commandLine) : Sender
+    {
+        $this->cr = in_array($commandLine, ["\r\n", "\r", "\n"]) ? $commandLine : "\n";
+
+        return $this;
+    }
+    
+    /**
+     * Sets mail line.
+     * 
+     * @param string $mailLine
+     * 
+     * @return Sender
+     * 
+     * @codeCoverageIgnore
+     */
+    public function lf(string $mailLine) : Sender
+    {
+        $this->lf = in_array($mailLine, ["\r\n", "\r", "\n"]) ? $mailLine : "\n";
 
         return $this;
     }
@@ -742,7 +775,8 @@ class Sender implements SenderInterface
             'dsn'        => $this->smtpDsn,
             'tos'        => $this->to,
             'mailPath'   => $this->mailPath,
-            'returnPath' => $this->headers['Return-Path']
+            'returnPath' => $this->headers['Return-Path'],
+            'commandLine'=> $this->cr
         ];
 
         $send = $this->driver->send(key($this->to), $this->subject, $this->message, $this->header, $settings);
