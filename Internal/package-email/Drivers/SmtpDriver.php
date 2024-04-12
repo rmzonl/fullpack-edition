@@ -18,6 +18,8 @@ use ZN\Email\Exception\SMTPDataFailureException;
 use ZN\Email\Exception\SMTPAuthException;
 use ZN\Email\Exception\SMTPAuthPasswordException;
 
+#[\AllowDynamicProperties]
+
 class SmtpDriver extends DriverMappingAbstract
 {
     /**
