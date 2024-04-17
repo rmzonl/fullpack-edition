@@ -128,4 +128,23 @@ class Strings extends Factory
 
         return $array;
     }
+
+    /**
+     * Serialize
+     * 
+     * @param array $array
+     * 
+     * @return string
+     */
+    function serialize(array $array) : string
+    {
+        $queryString = [];
+
+        foreach( $array as $key => $value ) 
+        {
+            $queryString[] = urlencode($key) . '=' . urlencode($value);
+        }
+
+        return implode('&', $queryString);
+    }
 }
