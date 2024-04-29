@@ -11,6 +11,8 @@
 
 use stdClass;
 
+#[\AllowDynamicProperties]
+
 class Objects
 {
     /**
