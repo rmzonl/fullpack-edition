@@ -9,6 +9,7 @@
  * @author  Ozan UYKUN [ozan@znframework.com]
  */
 
+use ZN\IS;
 use ZN\Base;
 use ZN\Config;
 use ZN\Support;
@@ -40,9 +41,11 @@ trait Driver
      */
     public function __construct(string $driver = NULL)
     {
+        $getParentClass = IS::phpVersion('8.3') ? get_parent_class($this) : get_parent_class();
+
         # 5.3.42[added]
         # If the parent has a method of building a class, then that method is introduced.
-        if( method_exists(get_parent_class() ?: '', '__construct'))
+        if( method_exists($getParentClass ?: '', '__construct'))
         {
             parent::__construct(); // @codeCoverageIgnore
         }
