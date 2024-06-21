@@ -292,11 +292,10 @@ interface GDInterface
      * 
      * @param float  $angle
      * @param string $spaceColor        = '0|0|0'
-     * @param int    $ignoreTransparent = 0
      * 
      * @return GD
      */
-    public function rotate(Float $angle, string $spaceColor = '0|0|0', int $ignoreTransparent = 0) : GD;
+    public function rotate(Float $angle, string $spaceColor = '0|0|0') : GD;
 
     /**
      * Set scale

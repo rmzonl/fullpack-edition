@@ -735,13 +735,12 @@ class GD implements GDInterface
      * 
      * @param float  $angle
      * @param string $spaceColor        = '0|0|0'
-     * @param int    $ignoreTransparent = 0
      * 
      * @return GD
      */
-    public function rotate(Float $angle, string $spaceColor = '0|0|0', int $ignoreTransparent = 0) : GD
+    public function rotate(Float $angle, string $spaceColor = '0|0|0') : GD
     {
-        $this->canvas = imagerotate($this->canvas, $angle, $this->allocate($spaceColor), $ignoreTransparent);
+        $this->canvas = imagerotate($this->canvas, $angle, $this->allocate($spaceColor));
 
         if( $spaceColor === 'transparent' )
         {

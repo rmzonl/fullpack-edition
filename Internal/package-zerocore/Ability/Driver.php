@@ -45,7 +45,7 @@ trait Driver
 
         # 5.3.42[added]
         # If the parent has a method of building a class, then that method is introduced.
-        if( method_exists($getParentClass ?: '', '__construct'))
+        if( $getParentClass && method_exists($getParentClass, '__construct'))
         {
             parent::__construct(); // @codeCoverageIgnore
         }
