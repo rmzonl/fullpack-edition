@@ -29,7 +29,7 @@ trait Functionalization
             return $standart(...$parameters);
         }
 
-        $getParentClass = IS::phpVersion('8.3') ? get_parent_class($this) : get_parent_class();
+        $getParentClass = get_parent_class($this);
 
         # The __call method of the parent class does not lose its functionality.
         if( $getParentClass && method_exists($getParentClass, '__call'))

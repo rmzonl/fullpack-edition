@@ -41,15 +41,6 @@ trait Driver
      */
     public function __construct(string $driver = NULL)
     {
-        $getParentClass = IS::phpVersion('8.3') ? get_parent_class($this) : get_parent_class();
-
-        # 5.3.42[added]
-        # If the parent has a method of building a class, then that method is introduced.
-        if( $getParentClass && method_exists($getParentClass, '__construct'))
-        {
-            parent::__construct(); // @codeCoverageIgnore
-        }
-        
         # If parent class does not contain driver constant, the operation is stopped.
         if( ! defined('static::driver') )
         {
