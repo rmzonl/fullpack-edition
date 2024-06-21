@@ -35,7 +35,7 @@ trait Driver
     /**
      * magic constructor
      * 
-     * @param string $driver = NULL
+     * @param string $driver = NULL 
      * 
      * @return void
      */

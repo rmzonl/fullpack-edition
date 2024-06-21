@@ -13,7 +13,7 @@ use ZN\IS;
 
 trait Functionalization
 {
-    /**
+    /** 
      * Magic call
      * 
      * @param string $method
