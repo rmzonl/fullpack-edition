@@ -9,7 +9,6 @@
  * @author  Ozan UYKUN [ozan@znframework.com]
  */
 
-use ZN\IS;
 use ZN\Base;
 use ZN\Config;
 use ZN\Support;
