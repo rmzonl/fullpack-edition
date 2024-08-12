@@ -14,6 +14,28 @@ use ZN\Base;
 class Converter
 {
     /**
+     * Sets delimiter.
+     * 
+     * @var string $delimiter = ''
+     */
+    protected static $delimiter = ';';
+
+    /**
+     * Sets delimiter.
+     * 
+     * @param string $delimiter
+     * 
+     * @return self
+     * 
+     */
+    public static function delimiter(string $delimiter)
+    {
+        self::$delimiter = $delimiter;
+
+        return new self;
+    }
+
+    /**
      * Array to XLS
      * 
      * @param array  $data
@@ -38,7 +60,7 @@ class Converter
         
         foreach( $data as $column )
         {
-            echo implode($extension === '.csv' ? ';' : '\t', $column) . EOL;
+            echo implode($extension === '.csv' ? self::$delimiter : '\t', $column) . EOL;
         }
     }
 
@@ -83,13 +105,15 @@ class Converter
                 
                 for( $c = 0; $c < $num; $c++ )
                 {
-                    $rows[] = explode(';', (string) $data[$c]);
+                    $rows[] = explode(self::$delimiter, $data[$c]);
                 }
             }
 
             fclose($resource);
-         }
+        }
 
-         return $rows;
+        self::$delimiter = ';';
+
+        return $rows;
     }
 }
