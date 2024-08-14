@@ -109,13 +109,18 @@ class Async
         return $procId;
     }
 
-    public static function list()
+    /**
+     * List
+     * 
+     * @return array
+     */
+    public static function list() : array
     {
         $processList = [];
 
         foreach( Filesystem::getFiles(self::$procDir, NULL, true) as $file )
         {
-            $processList[] = self::getData($file)['status'];
+            $processList[] = self::getData($file);
         }
 
         return $processList;
@@ -250,9 +255,11 @@ class Async
         
         foreach( $procIds as $procId )
         {
-            if( is_file($procId) )
+            $procFile = self::getProcFile($procId);
+
+            if( is_file($procFile) )
             {
-                $pending[$procId] = 1; # pending.
+                $pending[$procFile] = 1; # pending.
             }
         }
 
@@ -312,14 +319,14 @@ class Async
         {
             $callback($i, $waitSecond);
 
-            sleep($waitSecond);
-
             if( $i == $count )
             {
                 self::close();
             }
 
             $i++;
+
+            sleep($waitSecond);
         }
     } 
 
