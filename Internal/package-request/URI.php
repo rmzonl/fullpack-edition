@@ -37,16 +37,27 @@ class URI implements URIInterface
      */
     public function __call($method, $parameters)
     {
-        if( preg_match('/^(e|s)[0-9]+$/', $method) )
+        if( preg_match('/^(e|s)([0-9]+)$/', $method) )
         {
             $typ = $method[0];
-            $num = substr($method, 1);
+            $num = $method[1];
             $val = $typ === 's' ? $num : -($num);
         
-            return self::segment($val, ...$parameters);
+            $return = self::segment($val, ...$parameters);
+        }
+        else
+        {
+            $return = self::get($method, ...$parameters);
         }
 
-        return self::get($method, ...$parameters);
+        if( $method[0] == 'X' )
+        {
+            $m = substr($method, 1);
+
+            return explode('?', self::$m(...$parameters))[0];
+        }
+
+        return $return; 
     }
 
     /**
