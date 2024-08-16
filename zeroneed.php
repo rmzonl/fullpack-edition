@@ -29,5 +29,5 @@ require __DIR__ . '/Internal/autoload.php';
 | Simplicity is our principle. Enjoy it.
 |
 */
-
+ 
 ZN\ZN::run('FE', '8.15.0', 'Mustafa Kemal Atatürk');
