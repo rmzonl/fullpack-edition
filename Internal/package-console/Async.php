@@ -61,9 +61,14 @@ class Async
      */
     public static function getData(string $procId = '') : array
     {
-        $return = Json::decodeArray(file_get_contents(self::getProcFile($procId)));
+        $procFile = self::getProcFile($procId);
 
-        return $return;
+        if( is_file($procFile) )
+        {
+            return Json::decodeArray(file_get_contents($procFile));
+        }
+
+        return [];
     }
 
     /**
@@ -135,7 +140,7 @@ class Async
      */
     public static function close(string $procId = '')
     { 
-        if( $pid = self::getData($procId)['status']['pid'] )
+        if( $pid = self::getData($procId)['status']['pid'] ?? NULL )
         {
             self::remove($procId);
 
@@ -287,21 +292,17 @@ class Async
      */
     public static function displayError(string $errorFile) : string
     {
-        if( $fileContent = file_get_contents(self::$procDir . $errorFile) ) 
+        if( is_file($file = self::$procDir . $errorFile) && ( $fileContent = file_get_contents($file) ) ) 
         {
             $data = Json::decodeArray($fileContent);
 
-            $display = Buffering\Callback::do(function() use($data)
+            return Buffering\Callback::do(function() use($data)
             { 
                 Exceptions::table($data['code'] ?? NULL, $data['message'], $data['file'], $data['line'], $data['trace']); 
             });
         }
-        else
-        {
-            $display = Errors::message('File not found!');
-        }
         
-        return $display;
+        return Errors::message('File not found!');
     }
 
     /**
@@ -339,7 +340,7 @@ class Async
      */
     public static function isRun(string $procId = '') : bool
     {
-        if( $pid = self::getData($procId)['status']['pid'] )
+        if( $pid = self::getData($procId)['status']['pid'] ?? NULL )
         {
             if( stripos(php_uname('s'), 'win') > -1 ) 
             {
