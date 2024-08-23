@@ -12,6 +12,7 @@
 use Throwable;
 use ZN\Base;
 use ZN\Config;
+use ZN\Request;
 use ZN\Buffering;
 use ZN\Filesystem;
 use ZN\Protection\Json;
@@ -37,9 +38,30 @@ class Async
      * @var string $procDir
      */
     protected static $procDir = FILES_DIR;
+    
+    /**
+     * Keeps soket URI.
+     * 
+     * @var string $socket
+     */
+    protected static $socketURI = '';
+    
+    /**
+     * Keeps socket success
+     * 
+     * @var string $success
+     */
+    protected static $success = '';
 
     /**
-     * Set process directory.
+     * Keeps socket error
+     * 
+     * @var string $error
+     */
+    protected static $error   = '';
+
+    /**
+     * Sets process directory.
      * 
      * @param string $directory
      * 
@@ -48,6 +70,20 @@ class Async
     public static function setProcDirectory(string $directory) : Async
     {
         self::$procDir = $directory;
+
+        return new self;
+    }
+
+    /**
+     * Sets socket URI.
+     * 
+     * @param string $directory
+     * 
+     * @return self
+     */
+    public static function setSocketURI(string $socketURI) : Async
+    {
+        self::$socketURI = $socketURI;
 
         return new self;
     }
@@ -245,6 +281,112 @@ class Async
     public static function report(array $data, string $suffix = 'report') : int
     {
         return file_put_contents(self::$procId . '-' . $suffix, Json::encode($data));
+    }
+
+    /**
+     * Output
+     * 
+     * @param array $data
+     * 
+     * @return int
+     */
+    public static function output(array $data) : int
+    {
+        return self::report($data, 'output');
+    }
+
+    /**
+     * Creates socket
+     */
+    public static function socket()
+    {
+        $originFile = self::getProcFile($_POST['procId']);
+
+        $procFile = Base::suffix($originFile, '-output');
+
+        if( is_file($originFile) )
+        {
+            echo json_encode(['status' => 'processing']);
+        }
+        else if( is_file($procFile) )
+        {
+            echo file_get_contents($procFile);
+
+            unlink($procFile);
+        }
+        else
+        {
+            echo json_encode([]);
+        }
+
+        exit;
+    }
+
+    
+    /**
+     * Sets socket success 
+     * 
+     * @param callable $callback
+     */
+    public static function success(callable $callable)
+    {
+        self::$success = $callable;
+
+        return new self;
+    }
+
+    /**
+     * Sets socket error 
+     * 
+     * @param callable $callback
+     */
+    public static function error(callable $callable)
+    {
+        self::$error = $callable;
+
+        return new self;
+    }
+
+    /**
+     * @param string $procId
+     * @param int    $time = 1000
+     * 
+     * @return string
+     */
+    public static function listen(string $procId, int $time = 1000) : string
+    {
+        $var = 'socket' . uniqid();
+
+        $return =
+        '   
+            var ' . $var . ' = setInterval(function()
+            {
+                $.ajax
+                ({
+                    url: "' . Request::getSiteURL(self::$socketURI) . '",
+                    type: "post",
+                    dataType: "json",
+                    data: {procId: "' . str_replace(self::$procDir, '', $procId) . '"},
+                    success: function(data)
+                    {
+                        ' . (self::$success ? Buffering\Callback::do(self::$success) : '') . '
+                        
+                        if( data.status != "processing" )
+                        {
+                            clearInterval(' . $var . ');
+                        }
+                    },
+                    error: function(data)
+                    {
+                        ' . (self::$error ? Buffering\Callback::do(self::$error) : '') . '
+                    }
+                })
+            }, ' . $time . ');
+        ';
+
+        self::$success = '';
+
+        return $return;
     }
 
     /**
