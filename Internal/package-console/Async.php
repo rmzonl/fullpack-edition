@@ -353,10 +353,12 @@ class Async
      * 
      * @return string
      */
-    public static function listen(string $procId, int $time = 1000) : string
+    public static function listen($procId, int $time = 1000) : string
     {
         $var = 'socket' . uniqid();
 
+        $procData = ( is_scalar($procId) ? '"' . str_replace(self::$procDir, '', $procId) . '"' : Buffering\Callback::do($procId) );
+        
         $return =
         '   
             var ' . $var . ' = setInterval(function()
@@ -366,7 +368,7 @@ class Async
                     url: "' . Request::getSiteURL(self::$socketURI) . '",
                     type: "post",
                     dataType: "json",
-                    data: {procId: "' . str_replace(self::$procDir, '', $procId) . '"},
+                    data: {procId: ' . $procData . '},
                     success: function(data)
                     {
                         ' . (self::$success ? Buffering\Callback::do(self::$success) : '') . '
