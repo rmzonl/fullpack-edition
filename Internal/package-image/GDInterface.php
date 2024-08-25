@@ -189,7 +189,7 @@ interface GDInterface
      * 
      * @return GD
      */
-    public function tfftext(string $text, array $settings = []) : GD;
+    public function ttftext(string $text, array $settings = []) : GD;
 
     /**
      * Set convolution

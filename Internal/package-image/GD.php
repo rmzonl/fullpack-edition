@@ -464,7 +464,7 @@ class GD implements GDInterface
      * 
      * @return GD
      */
-    public function tfftext(string $text, array $settings = []) : GD
+    public function ttftext(string $text, array $settings = []) : GD
     {
         $fontSize   = $settings['fontSize']  ?? $this->fontSize  ?? 14;
         $angle      = $settings['angle']     ?? $this->angle     ?? 0;
