@@ -182,6 +182,16 @@ interface GDInterface
     public function text(string $text, array $settings = []) : GD;
 
     /**
+     * Creates ttftext
+     * 
+     * @param string $text
+     * @param array  $settings = []
+     * 
+     * @return GD
+     */
+    public function tfftext(string $text, array $settings = []) : GD;
+
+    /**
      * Set convolution
      * 
      * @param array $matrix
