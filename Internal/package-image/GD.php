@@ -14,6 +14,8 @@ use ZN\Base;
 use ZN\Helper;
 use ZN\Singleton;
 use ZN\Ability\Revolving;
+use ZN\Image\Exception\FontNotFoundException;
+use ZN\Image\Exception\TTFExtensionException;
 use ZN\Image\Exception\InvalidArgumentException;
 use ZN\Image\Exception\InvalidImageFileException;
 
@@ -448,6 +450,40 @@ class GD implements GDInterface
         {
             $method($this->canvas, $font, $x, $y, $char, $this->allocate($color));
         }
+
+        $this->defaultRevolvingVariables();
+
+        return $this;
+    }
+    
+    /**
+     * Creates ttftext
+     * 
+     * @param string $text
+     * @param array  $settings = []
+     * 
+     * @return GD
+     */
+    public function tfftext(string $text, array $settings = []) : GD
+    {
+        $fontSize   = $settings['fontSize']  ?? $this->fontSize  ?? 14;
+        $angle      = $settings['angle']     ?? $this->angle     ?? 0;
+        $x          = $settings['x']         ?? $this->x         ?? 0;
+        $y          = $settings['y']         ?? $this->y         ?? 0;
+        $color      = $settings['color']     ?? $this->color     ?? '0|0|0';
+        $load       = $settings['load']      ?? $this->load      ?? '';
+
+        if( ! is_file($load) )
+        {
+            throw new FontNotFoundException(NULL, $load);
+        }
+
+        if( pathinfo($load, PATHINFO_EXTENSION) !== 'ttf' )
+        {
+            throw new TTFExtensionException(NULL, $load);
+        }
+        
+        imagettftext($this->canvas, $fontSize, $angle, $x, $y, $this->allocate($color), $load, $text);
 
         $this->defaultRevolvingVariables();
 
