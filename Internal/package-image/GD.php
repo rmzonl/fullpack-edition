@@ -500,6 +500,11 @@ class GD implements GDInterface
      */
     public function text(string $text, array $settings = []) : GD
     {
+        if( $settings['load'] ?? $this->load )
+        {
+            return $this->ttftext($text, $settings);
+        }
+
         return $this->char($text, $settings, 'string');
     }
 
