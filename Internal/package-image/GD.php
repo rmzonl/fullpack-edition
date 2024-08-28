@@ -52,6 +52,21 @@ class GD implements GDInterface
     protected $mime;
 
     /**
+     * Keeps mime class
+     */
+    protected $imageSize;
+
+    /**
+     * Keeps mime type
+     */
+    protected $mimeType;
+
+    /**
+     * Keeps ttf font path
+     */
+    protected $load;
+
+    /**
      * Magic Constructor
      */
     public function __construct()
@@ -67,6 +82,18 @@ class GD implements GDInterface
     public function info() : array
     {
         return gd_info();
+    }
+
+    /**
+     * Load ttf font
+     * 
+     * @return GD
+     */
+    public function load($ttfpath) : GD
+    {
+        $this->load = $ttfpath;
+
+        return $this;
     }
 
     /**
@@ -100,8 +127,6 @@ class GD implements GDInterface
         {
             $this->createEmptyCanvas($width, $height, $rgb, $real);
         }
-        
-        $this->defaultRevolvingVariables();
 
         return $this;
     }
@@ -261,7 +286,7 @@ class GD implements GDInterface
             );
         }
         
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y', 'width', 'height', 'start', 'end', 'color', 'type']);
 
         return $this;
     }
@@ -291,7 +316,7 @@ class GD implements GDInterface
             imagefilledellipse($this->canvas, $x, $y, $width, $height, $this->allocate($color));
         }
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y' ,'width', 'height', 'color', 'type']);
 
         return $this;
     }
@@ -306,20 +331,19 @@ class GD implements GDInterface
     public function polygon(array $settings = []) : GD
     {
         $points     = $settings['points']     ?? $this->points     ?? 0;
-        $pointCount = $settings['pointCount'] ?? $this->pointCount ?? (ceil(count($this->points ?? $points) / 2));
         $color      = $settings['color']      ?? $this->color      ?? '0|0|0';
         $style      = $settings['type']       ?? $this->type       ?? NULL;
 
         if( $style === NULL )
         {
-            imagepolygon($this->canvas, $points, $pointCount, $this->allocate($color));
+            imagepolygon($this->canvas, $points, $this->allocate($color));
         }
         else
         {
-            imagefilledpolygon($this->canvas, $points, $pointCount, $this->allocate($color));
+            imagefilledpolygon($this->canvas, $points, $this->allocate($color));
         }
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['points', 'color', 'type']);
 
         return $this;
     }
@@ -352,7 +376,7 @@ class GD implements GDInterface
             imagefilledrectangle($this->canvas, $x, $y, $width, $height, $this->allocate($color));
         }
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y' ,'width', 'height', 'color', 'type']);
 
         return $this;
     }
@@ -381,7 +405,7 @@ class GD implements GDInterface
             imagefilltoborder($this->canvas, $x, $y, $this->allocate($borderColor), $this->allocate($color));
         }
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y', 'color', 'borderColor']);
 
         return $this;
     }
@@ -451,7 +475,7 @@ class GD implements GDInterface
             $method($this->canvas, $font, $x, $y, $char, $this->allocate($color));
         }
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y' ,'font', 'color', 'type']);
 
         return $this;
     }
@@ -473,6 +497,8 @@ class GD implements GDInterface
         $color      = $settings['color']     ?? $this->color     ?? '0|0|0';
         $load       = $settings['load']      ?? $this->load      ?? '';
 
+        $load       = Base::suffix($load, '.ttf');
+
         if( ! is_file($load) )
         {
             throw new FontNotFoundException(NULL, $load);
@@ -485,7 +511,7 @@ class GD implements GDInterface
         
         imagettftext($this->canvas, $fontSize, $angle, $x, $y, $this->allocate($color), $load, $text);
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['fontSize', 'angle', 'x', 'y', 'color']);
 
         return $this;
     }
@@ -569,7 +595,7 @@ class GD implements GDInterface
 
         imagecopy($this->canvas, $source, $xt, $yt, $xs, $ys, $width, $height);
         
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['target', 'source' ,'width', 'height']);
 
         return $this;
     }
@@ -606,7 +632,7 @@ class GD implements GDInterface
 
         $function($this->canvas, $source, $xt, $yt, $xs, $ys, $width, $height, $percent);
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['target', 'source' ,'width', 'height', 'percent']);
 
         return $this;
     }
@@ -659,7 +685,7 @@ class GD implements GDInterface
 
         $function($this->canvas, $source, $xt, $yt, $xs, $ys, $wt, $ht, $ws, $hs);
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['target', 'source' ,'width', 'height', 'sourceWidth', 'sourceHeight']);
 
         return $this;
     }
@@ -699,7 +725,7 @@ class GD implements GDInterface
 
         $this->canvas = imagecrop($this->canvas, $sets);
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y' ,'width', 'height']);
         
         return $this;
     }
@@ -722,8 +748,6 @@ class GD implements GDInterface
             $threshold, 
             $mode === 'threshold' ? $this->allocate($color) : $color
         );
-
-        $this->defaultRevolvingVariables();
 
         return $this;
     }
@@ -753,7 +777,7 @@ class GD implements GDInterface
             imagedashedline($this->canvas, $x1, $y1, $x2, $y2, $this->allocate($rgb));
         }
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x1', 'y1', 'x2', 'y2', 'color', 'type']);
 
         return $this;
     }
@@ -836,7 +860,7 @@ class GD implements GDInterface
 
         imagesetpixel($this->canvas, $x, $y, $this->allocate($rgb));
 
-        $this->defaultRevolvingVariables();
+        $this->defaultRevolvingVariables(['x', 'y', 'color']);
 
         return $this;
     }
@@ -898,7 +922,7 @@ class GD implements GDInterface
 
         $this->generateImageType();
         $this->destroyImage();
-        $this->defaultVariables();
+        $this->defaultGlobalVariables();
 
         return $canvas;
     }
@@ -908,7 +932,7 @@ class GD implements GDInterface
      */
     protected function createImageCanvas($image, $width, $height)
     {
-        $this->type = $this->mime->type($image, 1);
+        $this->mimeType = $this->mime->type($image, 1);
             
         $this->imageSize = ! isset($width) ? getimagesize($image) : [(int) $width, (int) $height];
 
@@ -988,19 +1012,20 @@ class GD implements GDInterface
      */
     protected function getImageContent()
     {
-        header("Content-type: image/".($this->type ?? 'jpeg'));
+        header("Content-type: image/" . ($this->mimeType ?? 'jpeg') );
     }
 
     /**
      * Protected Default Variables
      */
-    protected function defaultVariables()
+    protected function defaultGlobalVariables()
     {
-        $this->canvas  = NULL;
-        $this->save    = NULL;
-        $this->output  = true;
-        $this->quality = NULL;
-        $this->type    = NULL;
+        $this->canvas    = NULL;
+        $this->save      = NULL;
+        $this->output    = true;
+        $this->quality   = NULL;
+        $this->type      = NULL;
+        $this->imageSize = NULL;
     }
 
     /**

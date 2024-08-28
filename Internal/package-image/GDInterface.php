@@ -19,6 +19,13 @@ interface GDInterface
     public function info() : array;
 
     /**
+     * Load ttf font
+     * 
+     * @return GD
+     */
+    public function load($ttfpath) : GD;
+
+    /**
      * Sets canvas
      * 
      * @param mixed $width

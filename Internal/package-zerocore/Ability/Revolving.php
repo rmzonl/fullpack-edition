@@ -67,14 +67,29 @@ trait Revolving
      */
     protected function defaultVariables($type = 'all', $self = false)
     {
-        # Gets class variables.
-        $vars = $this->getClassVarsByType($type);      
-
-        # MDefaults all class properties null.
-        foreach( $vars as $key => $var )
+        if( $type === NULL )
         {
-            $this->$key = ($self === false ? NULL : $var);
+            return;
         }
+        else if( is_array($type) )
+        {
+            foreach( $type as $key )
+            {
+                $this->$key = ($self === false ? NULL : $var);
+            }
+        }
+        else
+        {
+            # Gets class variables.
+            $vars = $this->getClassVarsByType($type);      
+
+            # MDefaults all class properties null.
+            foreach( $vars as $key => $var )
+            {
+                $this->$key = ($self === false ? NULL : $var);
+            }
+        }
+       
     }
 
     /**
@@ -92,9 +107,9 @@ trait Revolving
      * 
      * @return void
      */
-    protected function defaultRevolvingVariables()
+    protected function defaultRevolvingVariables($type = NULL)
     {
         # It only converts the properties that this property creates to a null value.
-        $this->defaultRevolvings('revolving');
+        $this->defaultVariables($type);
     }
 }
