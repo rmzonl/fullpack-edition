@@ -15,7 +15,6 @@ use ZN\Helper;
 use ZN\Singleton;
 use ZN\Ability\Revolving;
 use ZN\Image\Exception\FontNotFoundException;
-use ZN\Image\Exception\TTFExtensionException;
 use ZN\Image\Exception\InvalidArgumentException;
 use ZN\Image\Exception\InvalidImageFileException;
 
@@ -502,11 +501,6 @@ class GD implements GDInterface
         if( ! is_file($load) )
         {
             throw new FontNotFoundException(NULL, $load);
-        }
-
-        if( pathinfo($load, PATHINFO_EXTENSION) !== 'ttf' )
-        {
-            throw new TTFExtensionException(NULL, $load);
         }
         
         imagettftext($this->canvas, $fontSize, $angle, $x, $y, $this->allocate($color), $load, $text);
