@@ -19,6 +19,7 @@ use ZN\Response;
 use ZN\Datatype;
 use ZN\Singleton;
 use ZN\Request\URI;
+use ZN\DataTypes\Arrays;
 use ZN\ErrorHandling\Errors;
 
 class Route extends FilterProperties implements RouteInterface
@@ -317,9 +318,10 @@ class Route extends FilterProperties implements RouteInterface
         return preg_replace_callback
         (
             '/\[(?<table>\w+|\.)\:(?<column>\w+|\.)(\s*\,\s*(?<separator>json|serial|separator)(\:(?<key>.*?))*)*\]/i', 
-            function($match) use (&$count, &$return, $routeSegment)
+            function($match) use (&$count, &$return, &$routeSegment)
             {
                 $count   = key(preg_grep('/' . preg_quote($match[0], '/') . '/', $routeSegment));
+                $routeSegment = Arrays::remove($routeSegment, $count);
                 $decoder = $match['separator'] ?? NULL;
                 $value   = $val = URI::segment($count + 1);
                 $column  = $select = $match['column'];
